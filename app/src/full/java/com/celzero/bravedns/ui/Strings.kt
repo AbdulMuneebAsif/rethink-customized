@@ -1,5 +1,12 @@
 package com.celzero.bravedns.ui
 
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
+import java.io.IOException
+import android.content.Context
+
 class Strings {
     val strings = listOf(
 
@@ -58,11 +65,81 @@ class Strings {
 
         )
 
-    fun getRandomString(): String {
-        // Get a random index from the list of strings.
-        val randomIndex = (0 until strings.size).random()
-
-        // Return the string at the random index.
+    // Function to get a random string from the list
+    private fun getRandomString(): String {
+        val randomIndex = (strings.indices).random()
         return strings[randomIndex]
+    }
+
+
+    fun getApiKey(context: Context, keyName: String): String? {
+        val assetManager = context.assets
+        val inputStream = assetManager.open("Gemini_API_Keys.json")
+        val jsonString = inputStream.bufferedReader().use { it.readText() }
+        val jsonObject = JSONObject(jsonString)
+
+        return jsonObject.optString(keyName, null) // Returns null if key not found
+    }
+    // Function to make a POST API call
+    fun fetchApiResponse(context:Context, callback: (String) -> Unit) {
+        val client = OkHttpClient()
+
+        // Define the JSON payload
+        val jsonPayload = """
+            {
+              "contents": [
+                {
+                  "parts": [
+                    {
+                      "text": "Explain how AI works"
+                    }
+                  ]
+                }
+              ]
+            }
+        """.trimIndent()
+
+        // Create the request body
+        val requestBody = jsonPayload.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+        val key = getApiKey(context, "tips_API_KEY")
+        // Build the request
+        val request = Request.Builder()
+            .url("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key="+key)
+            .post(requestBody)
+            .addHeader("Content-Type", "application/json")
+            .build()
+
+        // Execute the request
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                // In case of failure, return a random string
+                callback(getRandomString())
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                println("responceBODY => "+ response)
+                response.use {
+                    if (!response.isSuccessful) {
+                        // If response code is not 200, return a random string
+                        callback(getRandomString())
+                        return
+                    }
+
+                    // Parse the response body to extract the "text"
+                    val responseBody = response.body?.string() ?: ""
+
+                    val jsonResponse = JSONObject(responseBody)
+                    val text = jsonResponse.getJSONArray("candidates")
+                        .getJSONObject(0)
+                        .getJSONObject("content")
+                        .getJSONArray("parts")
+                        .getJSONObject(0)
+                        .getString("text")
+
+                    // Return the API response text
+                    callback(text)
+                }
+            }
+        })
     }
 }
