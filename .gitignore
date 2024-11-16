@@ -26,3 +26,4 @@ app/src/headless/assets
 /platform-tools
 /platforms
 /tools
+app/src/main/assets/Gemini_API_Keys.json

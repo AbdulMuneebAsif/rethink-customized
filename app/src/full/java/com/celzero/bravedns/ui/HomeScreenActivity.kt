@@ -120,11 +120,22 @@ class HomeScreenActivity : AppCompatActivity(R.layout.activity_home_screen) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
-        val randomString = Strings().getRandomString()
+//        val randomString = Strings().getRandomString()
+
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Security Tip")
-        builder.setMessage(randomString)
-        builder.create().show()
+
+        // Fetch the API response or a random string
+        Strings().fetchApiResponse(this) { result ->
+            runOnUiThread {
+                // Update the AlertDialog message with the result
+                builder.setMessage(result)
+                builder.setPositiveButton("OK") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                builder.create().show()
+            }
+        }
 
 
         setTheme(getCurrentTheme(isDarkThemeOn(), persistentState.theme))
