@@ -1294,6 +1294,8 @@
     <string name="ssv_toast_start_rethink" description="This label will appear on the stats screen as toast to start Rethink app" translatable="true">Start Rethink to proceed</string>
     <string name="ssv_see_more" translatable="true">Show All</string>
     <string name="scan_now">Scan Now</string>
+    <string name="deep_scan">Deep Scan</string>
+  <string name="quick_scan">Quick Scan</string>
 
 
 </resources>

@@ -9,41 +9,39 @@
         android:id="@+id/app_count_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=""
+        android:text="299 Apps"
         android:textSize="18sp"
         android:layout_gravity="start" />
 
-    <!-- TextView to display total packages scanned -->
+    <!-- Text views to show dynamic values -->
     <TextView
         android:id="@+id/total_apps_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Total Packages Scanned: 0"
-        android:textSize="16sp"
-        android:layout_marginTop="16dp" />
+        android:textSize="18sp"
+        android:layout_marginTop="8dp" />
 
-    <!-- TextView to display total threats found -->
     <TextView
         android:id="@+id/threat_count_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Total Threats Found: 0"
-        android:textSize="16sp"
+        android:textSize="18sp"
         android:layout_marginTop="8dp" />
 
-    <!-- TextView to display current app being scanned -->
     <TextView
         android:id="@+id/current_app_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Currently Scanning: None"
-        android:textSize="16sp"
+        android:textSize="18sp"
         android:layout_marginTop="8dp" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="32dp">
+        android:layout_weight="1">
 
         <!-- ProgressBar centered on the screen with larger size -->
         <ProgressBar
@@ -52,7 +50,28 @@
             android:layout_height="200dp"
             android:visibility="gone"
             android:layout_centerInParent="true" />
-
     </RelativeLayout>
+
+    <!-- Buttons for Quick Scan and Deep Scan -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/quick_scan_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Quick Scan"
+            android:layout_margin="8dp" />
+
+        <Button
+            android:id="@+id/deep_scan_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Deep Scan"
+            android:layout_margin="8dp" />
+    </LinearLayout>
 
 </LinearLayout>

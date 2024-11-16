@@ -1,9 +1,10 @@
 package com.celzero.bravedns.ui
 
 import android.content.pm.PackageInfo
-import android.content.pm.PackageManager // Add this import
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -22,6 +23,8 @@ class VirusScannerActivity : AppCompatActivity() {
     private lateinit var totalAppsText: TextView
     private lateinit var threatCountText: TextView
     private lateinit var currentAppText: TextView
+    private lateinit var quickScanButton: Button
+    private lateinit var deepScanButton: Button
 
     private var totalAppsCounter = 0
     private var threatCount = 0
@@ -35,27 +38,42 @@ class VirusScannerActivity : AppCompatActivity() {
         totalAppsText = findViewById(R.id.total_apps_text)
         threatCountText = findViewById(R.id.threat_count_text)
         currentAppText = findViewById(R.id.current_app_text)
+        quickScanButton = findViewById(R.id.quick_scan_button)
+        deepScanButton = findViewById(R.id.deep_scan_button)
 
-        // Start the scanning in a background thread
-        startScanInBackground()
+        // Set button listeners
+        quickScanButton.setOnClickListener {
+            startScan("test.json")
+        }
+
+        deepScanButton.setOnClickListener {
+            startScan("virus_DB.json")
+        }
     }
 
-    private fun startScanInBackground() {
+    private fun startScan(jsonFileName: String) {
+        // Reset counters
+        totalAppsCounter = 0
+        threatCount = 0
+
         // Show progress bar and update UI dynamically
         progressBar.visibility = ProgressBar.VISIBLE
+        totalAppsText.text = "Total Packages Scanned: 0"
+        threatCountText.text = "Total Threats Found: 0"
+        currentAppText.text = "Currently Scanning: None"
 
-        // Run the scanning in a coroutine to not block the UI thread
+        // Run the scanning in a coroutine
         GlobalScope.launch(Dispatchers.Main) {
             withContext(Dispatchers.IO) {
-                scanForThreats()
+                scanForThreats(jsonFileName)
             }
         }
     }
 
-    private fun readVirusDbJson(): List<VirusEntry> {
+    private fun readVirusDbJson(fileName: String): List<VirusEntry> {
         val virusList = mutableListOf<VirusEntry>()
         try {
-            val inputStream = assets.open("test.json")
+            val inputStream = assets.open(fileName)
             val bufferedReader = BufferedReader(InputStreamReader(inputStream))
             val jsonText = bufferedReader.use { it.readText() }
 
@@ -94,13 +112,12 @@ class VirusScannerActivity : AppCompatActivity() {
         }
     }
 
-    private fun scanForThreats() {
-        val virusDB = readVirusDbJson()
+    private fun scanForThreats(jsonFileName: String) {
+        val virusDB = readVirusDbJson(jsonFileName)
         val packageManager = packageManager
         val installedPackages: List<PackageInfo> = packageManager.getInstalledPackages(PackageManager.GET_META_DATA)
 
         installedPackages.forEach { packageInfo ->
-            // Update the UI to show the number of apps being scanned
             totalAppsCounter++
             runOnUiThread {
                 totalAppsText.text = "Total Packages Scanned: $totalAppsCounter"
@@ -110,29 +127,21 @@ class VirusScannerActivity : AppCompatActivity() {
             val apkFilePath = packageInfo.applicationInfo.sourceDir
             val packageHash = calculateSHA256Hash(apkFilePath)
 
-            // Update the UI to show the current app being scanned
             runOnUiThread {
                 currentAppText.text = "Currently Scanning: $appName"
             }
 
             virusDB.forEach { virusEntry ->
                 if (virusEntry.hash.equals(packageHash, ignoreCase = true)) {
-                    // Threat detected, update threat count
                     threatCount++
                     runOnUiThread {
                         threatCountText.text = "Total Threats Found: $threatCount"
                     }
-
-                    Log.d("VirusScanner", "Threat Detected!")
-                    Log.d("VirusScanner", "App Name: $appName")
-                    Log.d("VirusScanner", "Package Hash: $packageHash")
-                    Log.d("VirusScanner", "Virus DB Hash: ${virusEntry.hash}")
-                    Log.d("VirusScanner", "Tags: ${virusEntry.tags}")
+                    Log.d("VirusScanner", "Threat Detected for $appName!")
                 }
             }
         }
 
-        // Hide progress bar after scanning
         runOnUiThread {
             progressBar.visibility = ProgressBar.GONE
         }
