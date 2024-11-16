@@ -52,6 +52,12 @@ class VirusScannerActivity : AppCompatActivity() {
     }
 
     private fun startScan(jsonFileName: String) {
+        // Disable and hide both buttons during scan
+        quickScanButton.isEnabled = false
+        deepScanButton.isEnabled = false
+        quickScanButton.visibility = Button.GONE
+        deepScanButton.visibility = Button.GONE
+
         // Reset counters
         totalAppsCounter = 0
         threatCount = 0
@@ -142,8 +148,13 @@ class VirusScannerActivity : AppCompatActivity() {
             }
         }
 
+        // After the scan completes, re-enable and show the buttons
         runOnUiThread {
             progressBar.visibility = ProgressBar.GONE
+            quickScanButton.isEnabled = true
+            deepScanButton.isEnabled = true
+            quickScanButton.visibility = Button.VISIBLE
+            deepScanButton.visibility = Button.VISIBLE
         }
     }
 

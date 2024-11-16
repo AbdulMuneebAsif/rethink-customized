@@ -278,22 +278,22 @@ class HomeScreenFragment : Fragment(R.layout.fragment_home_screen) {
         b.fhsCardDnsLl.setOnClickListener {
             startDnsActivity(DnsDetailActivity.Tabs.CONFIGURE.screen)
         }
-
-        b.homeFragmentBottomSheetIcon.setOnClickListener {
-            b.homeFragmentBottomSheetIcon.isEnabled = false
-            openBottomSheet()
-            delay(TimeUnit.MILLISECONDS.toMillis(500), lifecycleScope) {
-                b.homeFragmentBottomSheetIcon.isEnabled = true
-            }
-        }
-
-        b.homeFragmentPauseIcon.setOnClickListener { handlePause() }
+//
+//        b.homeFragmentBottomSheetIcon.setOnClickListener {
+//            b.homeFragmentBottomSheetIcon.isEnabled = false
+//            openBottomSheet()
+//            delay(TimeUnit.MILLISECONDS.toMillis(500), lifecycleScope) {
+//                b.homeFragmentBottomSheetIcon.isEnabled = true
+//            }
+//        }
+//
+//        b.homeFragmentPauseIcon.setOnClickListener { handlePause() }
 
         b.fhsDnsOnOffBtn.setOnClickListener {
             handleMainScreenBtnClickEvent()
             delay(TimeUnit.MILLISECONDS.toMillis(500), lifecycleScope) {
                 if (isAdded) {
-                    b.homeFragmentBottomSheetIcon.isEnabled = true
+//                    b.homeFragmentBottomSheetIcon.isEnabled = true
                 }
             }
         }
@@ -537,8 +537,9 @@ class HomeScreenFragment : Fragment(R.layout.fragment_home_screen) {
     }
 
     private fun updateMainButtonUi() {
+        b.virusScannerBtn.setBackgroundResource(R.drawable.home_screen_button_start_bg)
         if (isVpnActivated) {
-            b.fhsDnsOnOffBtn.setBackgroundResource(R.drawable.home_screen_button_stop_bg)
+            b.fhsDnsOnOffBtn.setBackgroundResource(R.drawable.home_screen_button_start_bg)
             b.fhsDnsOnOffBtn.text = getString(R.string.hsf_stop_btn_state)
         } else {
             b.fhsDnsOnOffBtn.setBackgroundResource(R.drawable.home_screen_button_start_bg)
