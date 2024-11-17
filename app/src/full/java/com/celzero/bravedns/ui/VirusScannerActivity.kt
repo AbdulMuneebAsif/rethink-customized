@@ -18,7 +18,6 @@ import java.io.InputStreamReader
 import java.security.MessageDigest
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import by.kirich1409.viewbindingdelegate.viewBinding
 import com.celzero.bravedns.adapter.CustomAdapter
 import com.celzero.bravedns.viewmodel.ItemsViewModel
 
@@ -30,6 +29,7 @@ class VirusScannerActivity : AppCompatActivity() {
     private lateinit var currentAppText: TextView
     private lateinit var quickScanButton: Button
     private lateinit var deepScanButton: Button
+    private lateinit var recyclerview: RecyclerView
 
     private var totalAppsCounter = 0
     private var threatCount = 0
@@ -45,9 +45,10 @@ class VirusScannerActivity : AppCompatActivity() {
         currentAppText = findViewById(R.id.current_app_text)
         quickScanButton = findViewById(R.id.quick_scan_button)
         deepScanButton = findViewById(R.id.deep_scan_button)
+        recyclerview = findViewById<RecyclerView>(R.id.recyclerview)
 
         // Initialize RecyclerView
-        val recyclerview = findViewById<RecyclerView>(R.id.recyclerview)
+
         recyclerview.layoutManager = LinearLayoutManager(this)
         val data = ArrayList<ItemsViewModel>()
         recyclerview.adapter = CustomAdapter(data)
@@ -66,6 +67,15 @@ class VirusScannerActivity : AppCompatActivity() {
         // Disable and hide buttons
         quickScanButton.isEnabled = false
         deepScanButton.isEnabled = false
+        recyclerview.visibility = RecyclerView.GONE
+        recyclerData.clear()
+        recyclerview.adapter?.notifyDataSetChanged()
+        totalAppsCounter = 0
+        threatCount = 0
+        totalAppsText.text = "Total Packages Scanned: 0"
+        threatCountText.text = "Total Threats Found: 0"
+//        val data = ArrayList<ItemsViewModel>()
+//        recyclerview.adapter = CustomAdapter(data)
         quickScanButton.visibility = Button.GONE
         deepScanButton.visibility = Button.GONE
 
@@ -130,6 +140,8 @@ class VirusScannerActivity : AppCompatActivity() {
         val virusDB = readVirusDbJson(jsonFileName)
         val installedPackages = packageManager.getInstalledPackages(PackageManager.GET_META_DATA)
 
+        var threatDetected = false
+
         installedPackages.forEach { packageInfo ->
             val appName = packageInfo.applicationInfo.loadLabel(packageManager).toString()
             val packageHash = calculateSHA256Hash(packageInfo.applicationInfo.sourceDir)
@@ -141,14 +153,14 @@ class VirusScannerActivity : AppCompatActivity() {
                 currentAppText.text = "Currently Scanning: $appName"
             }
 
-            println("name => " + appName + " | " + packageHash)
             val isThreat = virusDB.any { it.hash.equals(packageHash, ignoreCase = true) }
             if (isThreat) {
                 threatCount++
+                threatDetected = true // Mark that a threat is detected
                 runOnUiThread {
                     threatCountText.text = "Total Threats Found: $threatCount"
                 }
-                recyclerData.add(ItemsViewModel(R.drawable.virus_svgrepo_com, appName))
+                recyclerData.add(ItemsViewModel(R.drawable.virus_danger, appName))
             }
         }
 
@@ -156,6 +168,13 @@ class VirusScannerActivity : AppCompatActivity() {
             progressBar.visibility = ProgressBar.GONE
             currentAppText.text = "Scan Complete"
 
+            if (threatDetected) {
+                // Show the RecyclerView if any threats are detected
+                recyclerview.visibility = RecyclerView.VISIBLE
+            } else {
+                // Optionally update the user that no threats were found
+                currentAppText.text = "No threats detected"
+            }
         }
     }
 
