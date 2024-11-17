@@ -92,7 +92,7 @@ class SecurityAdvisorTips {
                 {
                   "parts": [
                     {
-                      "text": "Provide a unique cyber security tip in string format as a security advisor."
+                      "text": "Provide a single, unique 2-3 line cybersecurity tip for everyday users based on best practices from NIST, OWASP, CISA, or leading antivirus providers (e.g., Kaspersky, Avast, McAfee). Randomize the topic each time from a wide range, including phishing awareness, software updates, device security, safe browsing habits, and social media privacy. Avoid repeating common topics such as 2FA/MFA. Ensure the tip is distinct and non-repetitive."
                     }
                   ]
                 }

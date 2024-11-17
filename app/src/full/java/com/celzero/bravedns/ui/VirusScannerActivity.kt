@@ -16,6 +16,11 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
 import java.security.MessageDigest
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.celzero.bravedns.adapter.CustomAdapter
+import com.celzero.bravedns.viewmodel.ItemsViewModel
 
 class VirusScannerActivity : AppCompatActivity() {
 
@@ -41,38 +46,41 @@ class VirusScannerActivity : AppCompatActivity() {
         quickScanButton = findViewById(R.id.quick_scan_button)
         deepScanButton = findViewById(R.id.deep_scan_button)
 
+        // Initialize RecyclerView
+        val recyclerview = findViewById<RecyclerView>(R.id.recyclerview)
+        recyclerview.layoutManager = LinearLayoutManager(this)
+        val data = ArrayList<ItemsViewModel>()
+        recyclerview.adapter = CustomAdapter(data)
+
         // Set button listeners
         quickScanButton.setOnClickListener {
-            startScan("test.json")
+            startScan("test.json", data)
         }
 
         deepScanButton.setOnClickListener {
-            startScan("virus_DB.json")
+            startScan("virus_DB.json", data)
         }
     }
 
-    private fun startScan(jsonFileName: String) {
-        // Disable and hide both buttons during scan
+    private fun startScan(jsonFileName: String, recyclerData: ArrayList<ItemsViewModel>) {
+        // Disable and hide buttons
         quickScanButton.isEnabled = false
         deepScanButton.isEnabled = false
         quickScanButton.visibility = Button.GONE
         deepScanButton.visibility = Button.GONE
 
-        // Reset counters
-        totalAppsCounter = 0
-        threatCount = 0
-
-        // Show progress bar and update UI dynamically
         progressBar.visibility = ProgressBar.VISIBLE
-        totalAppsText.text = "Total Packages Scanned: 0"
-        threatCountText.text = "Total Threats Found: 0"
-        currentAppText.text = "Currently Scanning: None"
+        currentAppText.text = "Starting scan..."
 
-        // Run the scanning in a coroutine
         GlobalScope.launch(Dispatchers.Main) {
             withContext(Dispatchers.IO) {
-                scanForThreats(jsonFileName)
+                scanForThreats(jsonFileName, recyclerData)
             }
+            // After scanning, re-enable buttons
+            quickScanButton.isEnabled = true
+            deepScanButton.isEnabled = true
+            quickScanButton.visibility = Button.VISIBLE
+            deepScanButton.visibility = Button.VISIBLE
         }
     }
 
@@ -118,43 +126,36 @@ class VirusScannerActivity : AppCompatActivity() {
         }
     }
 
-    private fun scanForThreats(jsonFileName: String) {
+    private fun scanForThreats(jsonFileName: String, recyclerData: ArrayList<ItemsViewModel>) {
         val virusDB = readVirusDbJson(jsonFileName)
-        val packageManager = packageManager
-        val installedPackages: List<PackageInfo> = packageManager.getInstalledPackages(PackageManager.GET_META_DATA)
+        val installedPackages = packageManager.getInstalledPackages(PackageManager.GET_META_DATA)
 
         installedPackages.forEach { packageInfo ->
-            totalAppsCounter++
-            runOnUiThread {
-                totalAppsText.text = "Total Packages Scanned: $totalAppsCounter"
-            }
-
             val appName = packageInfo.applicationInfo.loadLabel(packageManager).toString()
-            val apkFilePath = packageInfo.applicationInfo.sourceDir
-            val packageHash = calculateSHA256Hash(apkFilePath)
+            val packageHash = calculateSHA256Hash(packageInfo.applicationInfo.sourceDir)
 
+            // Update UI dynamically
             runOnUiThread {
+                totalAppsCounter++
+                totalAppsText.text = "Total Packages Scanned: $totalAppsCounter"
                 currentAppText.text = "Currently Scanning: $appName"
             }
 
-            virusDB.forEach { virusEntry ->
-                if (virusEntry.hash.equals(packageHash, ignoreCase = true)) {
-                    threatCount++
-                    runOnUiThread {
-                        threatCountText.text = "Total Threats Found: $threatCount"
-                    }
-                    Log.d("VirusScanner", "Threat Detected for $appName!")
+            println("name => " + appName + " | " + packageHash)
+            val isThreat = virusDB.any { it.hash.equals(packageHash, ignoreCase = true) }
+            if (isThreat) {
+                threatCount++
+                runOnUiThread {
+                    threatCountText.text = "Total Threats Found: $threatCount"
                 }
+                recyclerData.add(ItemsViewModel(R.drawable.virus_svgrepo_com, appName))
             }
         }
 
-        // After the scan completes, re-enable and show the buttons
         runOnUiThread {
             progressBar.visibility = ProgressBar.GONE
-            quickScanButton.isEnabled = true
-            deepScanButton.isEnabled = true
-            quickScanButton.visibility = Button.VISIBLE
-            deepScanButton.visibility = Button.VISIBLE
+            currentAppText.text = "Scan Complete"
+
         }
     }
 

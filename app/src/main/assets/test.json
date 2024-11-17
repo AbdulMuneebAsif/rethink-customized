@@ -39,6 +39,22 @@
         "signature": "AndrMonitor",
         "tags": "AndrMonitor android apk signed stalkerware ",
         "reporter": "tenacioustek"
+      },
+      {
+        "date": "2024-09-02 02:39",
+        "hash": "c0eb0e5286317b4ed082091ad36b1d91d56c8a13284173f7f2652e2d60e6333f",
+        "type": "apk",
+        "signature": "AndrMonitor",
+        "tags": "AndrMonitor android apk signed stalkerware ",
+        "reporter": "tenacioustek"
+      },
+      {
+        "date": "2024-09-02 02:39",
+        "hash": "be25d5e9485f52d3e3ec9e56d72a8cf224af658df07204d06ddd1687a1f62acb",
+        "type": "apk",
+        "signature": "AndrMonitor",
+        "tags": "AndrMonitor android apk signed stalkerware ",
+        "reporter": "tenacioustek"
       }
     ]
 }
