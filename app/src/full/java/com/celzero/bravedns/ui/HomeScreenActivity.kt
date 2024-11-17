@@ -22,13 +22,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageInfo
-import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -94,7 +92,6 @@ import java.io.File
 import java.util.Calendar
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
-import android.view.View
 
 class HomeScreenActivity : AppCompatActivity(R.layout.activity_home_screen) {
     private val b by viewBinding(ActivityHomeScreenBinding::bind)
@@ -126,7 +123,7 @@ class HomeScreenActivity : AppCompatActivity(R.layout.activity_home_screen) {
         builder.setTitle("Security Tip")
 
         // Fetch the API response or a random string
-        Strings().fetchApiResponse(this) { result ->
+        SecurityAdvisorTips().fetchApiResponse(this) { result ->
             runOnUiThread {
                 // Update the AlertDialog message with the result
                 builder.setMessage(result)

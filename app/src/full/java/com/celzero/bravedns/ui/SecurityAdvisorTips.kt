@@ -7,8 +7,8 @@ import org.json.JSONObject
 import java.io.IOException
 import android.content.Context
 
-class Strings {
-    val strings = listOf(
+class SecurityAdvisorTips {
+    val CacheSecurityTips = listOf(
 
         "Regularly update your software and operating systems to ensure you have the latest security patches, and use strong, unique passwords for each account to minimize the risk of unauthorized access.",
         "Enable two-factor authentication (2FA) whenever possible to add an extra layer of security to your online accounts.",
@@ -67,8 +67,8 @@ class Strings {
 
     // Function to get a random string from the list
     private fun getRandomString(): String {
-        val randomIndex = (strings.indices).random()
-        return strings[randomIndex]
+        val randomIndex = (CacheSecurityTips.indices).random()
+        return CacheSecurityTips[randomIndex]
     }
 
 
@@ -84,6 +84,7 @@ class Strings {
     fun fetchApiResponse(context:Context, callback: (String) -> Unit) {
         val client = OkHttpClient()
 
+
         // Define the JSON payload
         val jsonPayload = """
             {
@@ -91,7 +92,7 @@ class Strings {
                 {
                   "parts": [
                     {
-                      "text": "Explain how AI works"
+                      "text": "Provide a unique cyber security tip in string format as a security advisor."
                     }
                   ]
                 }
