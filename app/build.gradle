@@ -145,7 +145,7 @@ dependencies {
     fullImplementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 
     fullImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
-    fullImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
+    fullImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0'
 
     // For liveData implementation
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.1'
