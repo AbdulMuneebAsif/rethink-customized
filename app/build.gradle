@@ -148,7 +148,7 @@ dependencies {
     fullImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
 
     // For liveData implementation
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.1'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.8.7'
     implementation 'com.google.code.gson:gson:2.10.1'
 
     implementation "androidx.room:room-runtime:$room_version"
